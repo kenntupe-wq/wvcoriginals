@@ -211,6 +211,18 @@
   .admin-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--faint); }
   .admin-or-divider{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); text-transform:uppercase; text-align:center; margin:10px 0;}
   .admin-hint{font-size:11px; color:var(--mid); margin-top:6px; display:block; line-height:1.5;}
+  .admin-listing-row{display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--faint);}
+  .admin-listing-thumb{width:42px; height:42px; flex-shrink:0; background:var(--faint); overflow:hidden; display:flex; align-items:center; justify-content:center;}
+  .admin-listing-thumb img{width:100%; height:100%; object-fit:cover;}
+  .admin-listing-info{flex:1; min-width:0;}
+  .admin-listing-title{font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .admin-listing-price{font-size:11px; color:var(--mid); margin-top:2px;}
+  .admin-listing-actions{display:flex; gap:6px; flex-shrink:0;}
+  .admin-listing-actions button{font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; padding:6px 10px; cursor:pointer; border:1px solid var(--line); background:var(--paper);}
+  .admin-listing-actions button.danger{color:#c0192c; border-color:#c0192c;}
+  .admin-listings-empty{font-size:12px; color:var(--mid); padding:6px 0 14px;}
+  .admin-editing-banner{background:var(--accent); color:#fff; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; padding:10px 14px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;}
+  .admin-editing-banner button{background:none; border:none; color:#fff; text-decoration:underline; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; padding:0;}
 
   /* ---------- CART DRAWER ---------- */
   .cart-overlay{position:fixed; inset:0; background:rgba(11,11,12,0.55); z-index:1199; opacity:0; pointer-events:none; transition:opacity 0.25s ease;}
@@ -572,7 +584,16 @@
     </div>
 
     <div class="admin-section">
-      <h4 style="margin-top:0;">Add New Store Listing</h4>
+      <h4 style="margin-top:0;">Your Listings</h4>
+      <div id="adminListingsManager"></div>
+    </div>
+
+    <div class="admin-section">
+      <h4 id="addListingHeading" style="margin-top:0;">Add New Store Listing</h4>
+      <div id="editingBanner" class="admin-editing-banner hidden">
+        <span>Editing an existing listing</span>
+        <button type="button" onclick="cancelEditListing()">Cancel</button>
+      </div>
       <div class="form-group"><label>Product Title</label><input type="text" id="addTitle" class="form-control" placeholder="e.g. 3500 South Hoodie"></div>
       <div class="form-row">
         <div class="form-group"><label>Price (e.g. $45.00)</label><input type="text" id="addPrice" class="form-control" placeholder="$45.00"></div>
@@ -592,7 +613,7 @@
         <label>Stripe Payment Link (Checkout URL)</label>
         <input type="text" id="addStripe" class="form-control" placeholder="https://buy.stripe.com/...">
       </div>
-      <button class="submit-custom" onclick="addNewListing()">Inject Listing To Grid</button>
+      <button class="submit-custom" id="addSubmitBtn" onclick="addNewListing()">Inject Listing To Grid</button>
       <button class="buy-btn" style="margin-top:15px; width:100%; text-align:center; background:#ff4444; border-color:#ff4444;" onclick="clearCustomListings()">Clear All Added Listings</button>
     </div>
   </div>
@@ -988,8 +1009,12 @@
 
   function triggerAdminPrompt() {
     const pass = prompt("Enter WVC Command Center Password:");
-    if (pass === ADMIN_PASSWORD) openModal('admin-modal');
-    else if (pass !== null) alert("Access Denied.");
+    if (pass === ADMIN_PASSWORD) {
+      openModal('admin-modal');
+      renderAdminListingsManager();
+    } else if (pass !== null) {
+      alert("Access Denied.");
+    }
   }
 
   function saveCustomLogo() {
@@ -1017,6 +1042,8 @@
     }
   }
 
+  let editingIndex = null;
+
   function addNewListing() {
     const title = document.getElementById('addTitle').value.trim();
     const price = document.getElementById('addPrice').value.trim();
@@ -1032,7 +1059,13 @@
     function finishSave(imgValue) {
       const newItem = { title, price, cat, badge, img: imgValue, stripe };
       const existing = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
-      existing.push(newItem);
+
+      if (editingIndex !== null && existing[editingIndex]) {
+        existing[editingIndex] = newItem;
+      } else {
+        existing.push(newItem);
+      }
+
       try {
         localStorage.setItem('wvc_custom_products', JSON.stringify(existing));
       } catch (err) {
@@ -1040,20 +1073,20 @@
         return;
       }
 
+      const wasEditing = editingIndex !== null;
       renderCustomListings();
+      renderAdminListingsManager();
       closeModal('admin-modal');
-      showToast('Listing Added!');
-
-      // reset the form for next time
-      document.getElementById('addTitle').value = '';
-      document.getElementById('addPrice').value = '';
-      document.getElementById('addBadge').value = '';
-      document.getElementById('addImg').value = '';
-      document.getElementById('addStripe').value = '';
-      fileInput.value = '';
+      showToast(wasEditing ? 'Listing Updated!' : 'Listing Added!');
+      resetListingForm();
     }
 
-    if (file) {
+    if (!imgUrl && !file && editingIndex !== null) {
+      // Editing and no new image picked — keep whatever image the listing already had.
+      const existing = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
+      const current = existing[editingIndex];
+      finishSave(current ? current.img : '');
+    } else if (file) {
       const reader = new FileReader();
       reader.onload = () => finishSave(reader.result); // base64 data URL of the uploaded photo
       reader.onerror = () => alert("Couldn't read that photo file — try a different image.");
@@ -1061,6 +1094,119 @@
     } else {
       finishSave(imgUrl);
     }
+  }
+
+  function resetListingForm() {
+    document.getElementById('addTitle').value = '';
+    document.getElementById('addPrice').value = '';
+    document.getElementById('addBadge').value = '';
+    document.getElementById('addImg').value = '';
+    document.getElementById('addStripe').value = '';
+    document.getElementById('addImgFile').value = '';
+    document.getElementById('addCat').value = 'apparel';
+    editingIndex = null;
+    document.getElementById('editingBanner').classList.add('hidden');
+    document.getElementById('addListingHeading').textContent = 'Add New Store Listing';
+    document.getElementById('addSubmitBtn').textContent = 'Inject Listing To Grid';
+  }
+
+  function editListing(index) {
+    const existing = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
+    const item = existing[index];
+    if (!item) return;
+
+    editingIndex = index;
+    document.getElementById('addTitle').value = item.title || '';
+    document.getElementById('addPrice').value = item.price || '';
+    document.getElementById('addCat').value = item.cat || 'apparel';
+    document.getElementById('addBadge').value = item.badge || '';
+    document.getElementById('addImg').value = item.img && item.img.startsWith('data:') ? '' : (item.img || '');
+    document.getElementById('addStripe').value = item.stripe || '';
+    document.getElementById('addImgFile').value = '';
+
+    document.getElementById('editingBanner').classList.remove('hidden');
+    document.getElementById('addListingHeading').textContent = 'Edit Listing';
+    document.getElementById('addSubmitBtn').textContent = 'Save Changes';
+
+    document.getElementById('addListingHeading').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function cancelEditListing() {
+    resetListingForm();
+  }
+
+  function deleteListing(index) {
+    const existing = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
+    const item = existing[index];
+    if (!item) return;
+    if (!confirm('Delete "' + item.title + '"? This can\'t be undone.')) return;
+
+    existing.splice(index, 1);
+    localStorage.setItem('wvc_custom_products', JSON.stringify(existing));
+
+    if (editingIndex !== null) {
+      // Indexes shift after a delete — bail out of any in-progress edit to avoid editing the wrong item.
+      resetListingForm();
+    }
+
+    renderCustomListings();
+    renderAdminListingsManager();
+    showToast('Listing deleted');
+  }
+
+  function renderAdminListingsManager() {
+    const box = document.getElementById('adminListingsManager');
+    const items = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
+
+    box.innerHTML = '';
+
+    if (items.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'admin-listings-empty';
+      empty.textContent = "You haven't added any listings yet — use the form below to add your first one.";
+      box.appendChild(empty);
+      return;
+    }
+
+    items.forEach((item, index) => {
+      const row = document.createElement('div');
+      row.className = 'admin-listing-row';
+
+      const thumb = document.createElement('div');
+      thumb.className = 'admin-listing-thumb';
+      if (item.img) {
+        const img = document.createElement('img');
+        img.src = item.img;
+        img.alt = '';
+        thumb.appendChild(img);
+      }
+
+      const info = document.createElement('div');
+      info.className = 'admin-listing-info';
+      const titleEl = document.createElement('div');
+      titleEl.className = 'admin-listing-title';
+      titleEl.textContent = item.title;
+      const priceEl = document.createElement('div');
+      priceEl.className = 'admin-listing-price';
+      priceEl.textContent = item.price + ' · ' + item.cat;
+      info.append(titleEl, priceEl);
+
+      const actions = document.createElement('div');
+      actions.className = 'admin-listing-actions';
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.textContent = 'Edit';
+      editBtn.onclick = () => editListing(index);
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'danger';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.onclick = () => deleteListing(index);
+      actions.append(editBtn, deleteBtn);
+
+      row.append(thumb, info, actions);
+      box.appendChild(row);
+    });
   }
 
   function renderCustomListings() {
