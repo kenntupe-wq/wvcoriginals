@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Alex+Brush&display=swap" rel="stylesheet">
+<script src="https://js.stripe.com/v3/"></script>
 <style>
   :root{
     --ink:#0b0b0c; --paper:#f6f5f1; --line:#1e1e1e;
@@ -208,6 +209,52 @@
   #admin-modal .modal-box { border-color: var(--accent); box-shadow: 8px 8px 0px var(--accent); max-width: 550px;}
   .admin-badge { background: var(--accent); color: white; padding: 2px 6px; font-size: 10px; border-radius: 4px; vertical-align: middle;}
   .admin-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--faint); }
+  .admin-or-divider{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); text-transform:uppercase; text-align:center; margin:10px 0;}
+  .admin-hint{font-size:11px; color:var(--mid); margin-top:6px; display:block; line-height:1.5;}
+
+  /* ---------- CART DRAWER ---------- */
+  .cart-overlay{position:fixed; inset:0; background:rgba(11,11,12,0.55); z-index:1199; opacity:0; pointer-events:none; transition:opacity 0.25s ease;}
+  .cart-overlay.open{opacity:1; pointer-events:auto;}
+  .cart-drawer{
+    position:fixed; top:0; right:0; height:100vh; width:400px; max-width:92vw; background:var(--paper);
+    border-left:1.5px solid var(--ink); z-index:1200; display:flex; flex-direction:column;
+    transform:translateX(100%); transition:transform 0.3s ease; box-shadow:-8px 0 0 rgba(11,11,12,0.04);
+  }
+  .cart-drawer.open{transform:translateX(0);}
+  .cart-drawer-head{display:flex; align-items:center; justify-content:space-between; padding:22px 24px; border-bottom:1px solid var(--line);}
+  .cart-drawer-head h3{font-family:'Anton',sans-serif; text-transform:uppercase; font-size:22px;}
+  .cart-items{flex:1; overflow-y:auto; padding:18px 24px;}
+  .cart-empty{padding:40px 24px; text-align:center; font-size:13px; color:var(--mid); font-family:'JetBrains Mono',monospace; text-transform:uppercase;}
+  .cart-item{display:flex; gap:14px; padding:16px 0; border-bottom:1px dashed var(--faint);}
+  .cart-item-thumb{width:60px; height:60px; flex-shrink:0; background:var(--faint); display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  .cart-item-thumb img{width:100%; height:100%; object-fit:cover;}
+  .cart-item-info{flex:1; display:flex; flex-direction:column; gap:4px; min-width:0;}
+  .cart-item-title{font-family:'Anton',sans-serif; font-size:14px; text-transform:uppercase; line-height:1.2;}
+  .cart-item-price{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--mid);}
+  .cart-item-row{display:flex; align-items:center; justify-content:space-between; margin-top:4px;}
+  .cart-qty{display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:13px;}
+  .cart-qty button{width:24px; height:24px; border:1px solid var(--line); background:var(--paper); cursor:pointer; font-size:13px; line-height:1;}
+  .cart-item-remove{background:none; border:none; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--mid); text-decoration:underline; padding:0;}
+  .cart-item-linetotal{font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700;}
+  .cart-footer{padding:20px 24px; border-top:1px solid var(--line);}
+  .cart-subtotal-row{display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; margin-bottom:10px;}
+  .cart-note{font-size:11px; color:var(--mid); line-height:1.5; margin-bottom:14px;}
+
+  /* ---------- CART CHECKOUT STEP ---------- */
+  .hidden{display:none !important;}
+  .cart-step{flex:1; overflow-y:auto;}
+  .cart-checkout-inner{padding:18px 24px;}
+  .cart-back-link{background:none; border:none; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; color:var(--mid); text-decoration:underline; padding:0; margin-bottom:18px; display:block;}
+  .cart-checkout-summary{display:flex; justify-content:space-between; align-items:baseline; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; padding-bottom:16px; margin-bottom:16px; border-bottom:1px dashed var(--faint);}
+  .cart-checkout-summary span:last-child{font-size:20px; font-family:'Anton',sans-serif;}
+  #stripe-card-element{border:1px solid var(--line); background:transparent; padding:14px; margin-top:6px;}
+  .cart-card-errors{color:#c0192c; font-size:12px; margin-top:8px;}
+  @keyframes wvc-spin{ to{transform:rotate(360deg);} }
+  .cart-spinner{width:14px; height:14px; border:2px solid rgba(246,245,241,0.4); border-top-color:var(--paper); border-radius:50%; display:inline-block; animation:wvc-spin 0.7s linear infinite; margin-left:8px; vertical-align:middle;}
+  .cart-success-box{text-align:center; padding:50px 24px;}
+  .cart-success-box .big-check{font-size:42px; margin-bottom:14px;}
+  .cart-success-box h3{font-family:'Anton',sans-serif; text-transform:uppercase; font-size:24px;}
+  .cart-success-box p{font-size:13px; color:#444; margin-top:10px; line-height:1.6;}
 </style>
 </head>
 <body>
@@ -228,7 +275,7 @@
     <a href="#join">Newsletter</a>
   </div>
   <div class="nav-utilities">
-    <button class="cart-btn" aria-label="View cart" onclick="showToast('Viewing Cart...')">
+    <button class="cart-btn" aria-label="View cart" onclick="openCart()">
       <span>Cart</span>
       <span class="cart-count" id="cartCounter">0</span>
     </button>
@@ -291,7 +338,7 @@
       <div class="product-details">
         <span class="product-category">Shirts &amp; Apparel</span>
         <h3 class="product-title">"Best Valley" Heavyweight Tee</h3>
-        <div class="product-meta"><span class="product-price">$32.00</span><button class="buy-btn" onclick="addToCart('&quot;Best Valley&quot; Heavyweight Tee')">Add To Cart</button></div>
+        <div class="product-meta"><span class="product-price">$32.00</span><button class="buy-btn" data-title="&quot;Best Valley&quot; Heavyweight Tee" data-price="32.00" onclick="addToCart(this)">Add To Cart</button></div>
       </div>
     </div>
 
@@ -303,7 +350,7 @@
       <div class="product-details">
         <span class="product-category">Bottles &amp; Flasks</span>
         <h3 class="product-title">Centennial 24oz Insulated Bottle</h3>
-        <div class="product-meta"><span class="product-price">$38.00</span><button class="buy-btn" onclick="addToCart('Centennial 24oz Insulated Bottle')">Add To Cart</button></div>
+        <div class="product-meta"><span class="product-price">$38.00</span><button class="buy-btn" data-title="Centennial 24oz Insulated Bottle" data-price="38.00" onclick="addToCart(this)">Add To Cart</button></div>
       </div>
     </div>
 
@@ -315,7 +362,7 @@
       <div class="product-details">
         <span class="product-category">Decals &amp; Goods</span>
         <h3 class="product-title">Classic 801 Die-Cut Car Decal</h3>
-        <div class="product-meta"><span class="product-price">$8.00</span><button class="buy-btn" onclick="addToCart('Classic 801 Die-Cut Car Decal')">Add To Cart</button></div>
+        <div class="product-meta"><span class="product-price">$8.00</span><button class="buy-btn" data-title="Classic 801 Die-Cut Car Decal" data-price="8.00" onclick="addToCart(this)">Add To Cart</button></div>
       </div>
     </div>
   </div>
@@ -533,7 +580,13 @@
       </div>
       <div class="form-row">
         <div class="form-group"><label>Badge Text</label><input type="text" id="addBadge" class="form-control" placeholder="New Release"></div>
-        <div class="form-group"><label>Image URL</label><input type="text" id="addImg" class="form-control" placeholder="https://.../shirt.jpg"></div>
+        <div class="form-group"><label>Image URL (optional)</label><input type="text" id="addImg" class="form-control" placeholder="https://.../shirt.jpg"></div>
+      </div>
+      <div class="admin-or-divider">— or —</div>
+      <div class="form-group">
+        <label>Upload a Photo From Your Device</label>
+        <input type="file" id="addImgFile" class="form-control" accept="image/*">
+        <span class="admin-hint">Pick a photo and it'll be used instead of the URL above. Tip: keep photos reasonably small (resize before uploading) — your browser has a storage limit, and very large photos may fail to save.</span>
       </div>
       <div class="form-group">
         <label>Stripe Payment Link (Checkout URL)</label>
@@ -545,10 +598,95 @@
   </div>
 </div>
 
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+  <div class="cart-drawer-head">
+    <h3>Your Cart</h3>
+    <button class="modal-close" onclick="closeCart()" aria-label="Close cart">✕ Close</button>
+  </div>
+
+  <div class="cart-step" id="cartStepItems">
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-empty" id="cartEmpty">Cart's empty — go grab some Valley gear.</div>
+  </div>
+
+  <div class="cart-step hidden" id="cartStepCheckout">
+    <div class="cart-checkout-inner">
+      <button class="cart-back-link" type="button" onclick="backToCartItems()">← Back to Cart</button>
+      <div class="cart-checkout-summary"><span>Order Total</span><span id="checkoutSubtotal">$0.00</span></div>
+
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="checkoutName" class="form-control" placeholder="Jane Doe">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="checkoutEmail" class="form-control" placeholder="you@email.com">
+      </div>
+      <div class="form-group">
+        <label>Shipping Address (or "Local Pickup")</label>
+        <input type="text" id="checkoutAddress" class="form-control" placeholder="123 Main St, West Valley City, UT">
+      </div>
+      <div class="form-group">
+        <label>Card Details</label>
+        <div id="stripe-card-element"></div>
+        <div class="cart-card-errors hidden" id="cartCardErrors"></div>
+      </div>
+
+      <button class="submit-custom" id="cartPayBtn" onclick="submitStripePayment()">
+        <span id="cartPayBtnText">Pay Now</span>
+        <span class="cart-spinner hidden" id="cartPaySpinner"></span>
+      </button>
+      <p class="admin-hint" style="margin-top:10px;">Payments are processed securely by Stripe — WVC Originals never sees or stores your card number.</p>
+    </div>
+  </div>
+
+  <div class="cart-step hidden" id="cartStepSuccess">
+    <div class="cart-success-box">
+      <div class="big-check">✅</div>
+      <h3>Order Placed!</h3>
+      <p>Thanks for the order — we'll get it packed up and follow up by email with shipping or pickup details.</p>
+      <button class="buy-btn" style="margin-top:20px;" onclick="closeCart()">Done</button>
+    </div>
+  </div>
+
+  <div class="cart-footer" id="cartFooterMain">
+    <div class="cart-subtotal-row"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+    <p class="cart-note">Independent storefront — secure checkout powered by Stripe. (Items with their own "Buy Now" button check out directly through Stripe instead.)</p>
+    <button class="submit-custom" id="cartCheckoutBtn" onclick="startCheckout()">Checkout</button>
+  </div>
+</aside>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
   const ADMIN_PASSWORD = "valley801"; // <--- CHANGE YOUR ADMIN PASSWORD HERE
+
+  /* ---------- STRIPE SETUP ---------- */
+  // vvv REPLACE with YOUR OWN WVC Originals Stripe publishable key vvv
+  // Find it at https://dashboard.stripe.com/apikeys (starts with pk_test_ or pk_live_)
+  const STRIPE_PUBLISHABLE_KEY = 'pk_test_YOUR_WVC_PUBLISHABLE_KEY_HERE';
+
+  let stripe = null;
+  let cardElement = null;
+  let cardMounted = false;
+
+  if (window.Stripe && !STRIPE_PUBLISHABLE_KEY.includes('YOUR_WVC')) {
+    stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+    const elements = stripe.elements();
+    cardElement = elements.create('card', {
+      style: {
+        base: {
+          color: '#0b0b0c',
+          fontFamily: 'Inter, sans-serif',
+          fontSize: '14px',
+          '::placeholder': { color: '#9a9892' }
+        },
+        invalid: { color: '#c0192c' }
+      }
+    });
+  }
 
   const burger = document.getElementById('burgerBtn');
   const navLinks = document.getElementById('navLinks');
@@ -561,10 +699,248 @@
     burger.setAttribute('aria-expanded', 'false');
   }));
 
-  let cartCount = 0;
-  function addToCart(item) {
-    document.getElementById('cartCounter').textContent = (++cartCount);
-    showToast(item + ' added to cart');
+  /* ---------- CART ---------- */
+  let cart = JSON.parse(localStorage.getItem('wvc_cart') || '[]');
+
+  function saveCart() {
+    localStorage.setItem('wvc_cart', JSON.stringify(cart));
+  }
+
+  function money(n) {
+    return '$' + (Math.round(n * 100) / 100).toFixed(2);
+  }
+
+  function addToCart(btn) {
+    const title = btn.dataset.title || 'Item';
+    const price = parseFloat(btn.dataset.price) || 0;
+    const img = btn.dataset.img || '';
+
+    const existing = cart.find(i => i.title === title);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ title, price, img, qty: 1 });
+    }
+    saveCart();
+    renderCart();
+    showToast(title + ' added to cart');
+  }
+
+  function changeQty(title, delta) {
+    const item = cart.find(i => i.title === title);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) {
+      cart = cart.filter(i => i.title !== title);
+    }
+    saveCart();
+    renderCart();
+  }
+
+  function removeCartItem(title) {
+    cart = cart.filter(i => i.title !== title);
+    saveCart();
+    renderCart();
+  }
+
+  function renderCart() {
+    const list = document.getElementById('cartItems');
+    const empty = document.getElementById('cartEmpty');
+    const subtotalEl = document.getElementById('cartSubtotal');
+    const counter = document.getElementById('cartCounter');
+
+    list.innerHTML = '';
+
+    if (cart.length === 0) {
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      cart.forEach(item => {
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+
+        const thumb = document.createElement('div');
+        thumb.className = 'cart-item-thumb';
+        if (item.img) {
+          const img = document.createElement('img');
+          img.src = item.img;
+          img.alt = '';
+          thumb.appendChild(img);
+        }
+
+        const info = document.createElement('div');
+        info.className = 'cart-item-info';
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'cart-item-title';
+        titleEl.textContent = item.title;
+
+        const priceEl = document.createElement('div');
+        priceEl.className = 'cart-item-price';
+        priceEl.textContent = money(item.price) + ' each';
+
+        const row2 = document.createElement('div');
+        row2.className = 'cart-item-row';
+
+        const qtyBox = document.createElement('div');
+        qtyBox.className = 'cart-qty';
+        const minusBtn = document.createElement('button');
+        minusBtn.type = 'button';
+        minusBtn.textContent = '−';
+        minusBtn.setAttribute('aria-label', 'Decrease quantity');
+        minusBtn.onclick = () => changeQty(item.title, -1);
+        const qtyVal = document.createElement('span');
+        qtyVal.textContent = item.qty;
+        const plusBtn = document.createElement('button');
+        plusBtn.type = 'button';
+        plusBtn.textContent = '+';
+        plusBtn.setAttribute('aria-label', 'Increase quantity');
+        plusBtn.onclick = () => changeQty(item.title, 1);
+        qtyBox.append(minusBtn, qtyVal, plusBtn);
+
+        const lineTotal = document.createElement('span');
+        lineTotal.className = 'cart-item-linetotal';
+        lineTotal.textContent = money(item.price * item.qty);
+
+        row2.append(qtyBox, lineTotal);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'cart-item-remove';
+        removeBtn.type = 'button';
+        removeBtn.textContent = 'Remove';
+        removeBtn.style.marginTop = '8px';
+        removeBtn.onclick = () => removeCartItem(item.title);
+
+        info.append(titleEl, priceEl, row2, removeBtn);
+        row.append(thumb, info);
+        list.appendChild(row);
+      });
+    }
+
+    const subtotal = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+    subtotalEl.textContent = money(subtotal);
+
+    const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+    counter.textContent = totalQty;
+  }
+
+  function cartSubtotal() {
+    return cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+  }
+
+  function goToCartStep(step) {
+    document.getElementById('cartStepItems').classList.toggle('hidden', step !== 'items');
+    document.getElementById('cartStepCheckout').classList.toggle('hidden', step !== 'checkout');
+    document.getElementById('cartStepSuccess').classList.toggle('hidden', step !== 'success');
+    document.getElementById('cartFooterMain').classList.toggle('hidden', step !== 'items');
+
+    if (step === 'checkout' && cardElement && !cardMounted) {
+      cardElement.mount('#stripe-card-element');
+      cardMounted = true;
+    }
+  }
+
+  function openCart() {
+    document.getElementById('cartDrawer').classList.add('open');
+    document.getElementById('cartDrawer').setAttribute('aria-hidden', 'false');
+    document.getElementById('cartOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCart() {
+    document.getElementById('cartDrawer').classList.remove('open');
+    document.getElementById('cartDrawer').setAttribute('aria-hidden', 'true');
+    document.getElementById('cartOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    goToCartStep('items');
+  }
+
+  function startCheckout() {
+    if (cart.length === 0) {
+      showToast('Your cart is empty');
+      return;
+    }
+    if (!stripe || !cardElement) {
+      alert('Stripe isn\'t set up yet on this site. Add your Stripe publishable key (STRIPE_PUBLISHABLE_KEY) near the top of the script to enable checkout.');
+      return;
+    }
+    document.getElementById('checkoutSubtotal').textContent = money(cartSubtotal());
+    goToCartStep('checkout');
+  }
+
+  function backToCartItems() {
+    goToCartStep('items');
+  }
+
+  async function submitStripePayment() {
+    const name = document.getElementById('checkoutName').value.trim();
+    const email = document.getElementById('checkoutEmail').value.trim();
+    const address = document.getElementById('checkoutAddress').value.trim();
+    const errBox = document.getElementById('cartCardErrors');
+
+    if (!name || !email || !address) {
+      alert('Please fill out your name, email, and shipping/pickup info.');
+      return;
+    }
+    if (cart.length === 0) {
+      showToast('Your cart is empty');
+      return;
+    }
+
+    const payBtn = document.getElementById('cartPayBtn');
+    const payText = document.getElementById('cartPayBtnText');
+    const spinner = document.getElementById('cartPaySpinner');
+    const subtotalSnapshot = cartSubtotal();
+
+    errBox.classList.add('hidden');
+    payText.textContent = 'Processing...';
+    spinner.classList.remove('hidden');
+    payBtn.disabled = true;
+
+    try {
+      const amountCents = Math.round(subtotalSnapshot * 100);
+
+      // This calls YOUR backend, which must create a Stripe PaymentIntent
+      // server-side using your Stripe SECRET key (never put the secret key
+      // in this file). See the create-payment-intent route provided alongside
+      // this file for a ready-to-use Express endpoint.
+      const res = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: amountCents,
+          currency: 'usd',
+          items: cart.map(i => ({ title: i.title, price: i.price, qty: i.qty })),
+          customer: { name, email, address }
+        })
+      });
+
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      const result = await stripe.confirmCardPayment(data.client_secret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: { name, email, address: { line1: address } }
+        }
+      });
+
+      if (result.error) throw new Error(result.error.message);
+
+      // Payment succeeded
+      cart = [];
+      saveCart();
+      renderCart();
+      goToCartStep('success');
+
+    } catch (err) {
+      errBox.textContent = err.message || 'Something went wrong. Please try again.';
+      errBox.classList.remove('hidden');
+    } finally {
+      payText.textContent = 'Pay ' + money(subtotalSnapshot);
+      spinner.classList.add('hidden');
+      payBtn.disabled = false;
+    }
   }
 
   function showToast(msg) {
@@ -606,6 +982,7 @@
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyA') triggerAdminPrompt();
     if (e.key === 'Escape') {
       document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
+      closeCart();
     }
   });
 
@@ -641,23 +1018,49 @@
   }
 
   function addNewListing() {
-    const title = document.getElementById('addTitle').value;
-    const price = document.getElementById('addPrice').value;
+    const title = document.getElementById('addTitle').value.trim();
+    const price = document.getElementById('addPrice').value.trim();
     const cat = document.getElementById('addCat').value;
-    const badge = document.getElementById('addBadge').value || 'WVC';
-    const img = document.getElementById('addImg').value;
-    const stripe = document.getElementById('addStripe').value;
+    const badge = document.getElementById('addBadge').value.trim() || 'WVC';
+    const imgUrl = document.getElementById('addImg').value.trim();
+    const stripe = document.getElementById('addStripe').value.trim();
+    const fileInput = document.getElementById('addImgFile');
+    const file = fileInput.files && fileInput.files[0];
 
-    if(!title || !price) { alert("Title and Price are strictly required."); return; }
+    if (!title || !price) { alert("Title and Price are strictly required."); return; }
 
-    const newItem = { title, price, cat, badge, img, stripe };
-    const existing = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
-    existing.push(newItem);
-    localStorage.setItem('wvc_custom_products', JSON.stringify(existing));
+    function finishSave(imgValue) {
+      const newItem = { title, price, cat, badge, img: imgValue, stripe };
+      const existing = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
+      existing.push(newItem);
+      try {
+        localStorage.setItem('wvc_custom_products', JSON.stringify(existing));
+      } catch (err) {
+        alert("That photo was too large to save in the browser. Try a smaller/compressed photo, or use the Image URL field instead.");
+        return;
+      }
 
-    renderCustomListings();
-    closeModal('admin-modal');
-    showToast('Listing Added!');
+      renderCustomListings();
+      closeModal('admin-modal');
+      showToast('Listing Added!');
+
+      // reset the form for next time
+      document.getElementById('addTitle').value = '';
+      document.getElementById('addPrice').value = '';
+      document.getElementById('addBadge').value = '';
+      document.getElementById('addImg').value = '';
+      document.getElementById('addStripe').value = '';
+      fileInput.value = '';
+    }
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => finishSave(reader.result); // base64 data URL of the uploaded photo
+      reader.onerror = () => alert("Couldn't read that photo file — try a different image.");
+      reader.readAsDataURL(file);
+    } else {
+      finishSave(imgUrl);
+    }
   }
 
   function renderCustomListings() {
@@ -665,32 +1068,70 @@
     grid.querySelectorAll('.dynamic-item').forEach(e => e.remove());
 
     const customItems = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
-    
+
     customItems.forEach(item => {
       const card = document.createElement('div');
       card.className = 'product-card dynamic-item';
       card.dataset.category = item.cat;
 
-      const imgHTML = item.img 
-        ? `<img src="${item.img}" alt="${item.title}" style="width:100%; height:100%; object-fit:cover;">` 
-        : `<svg viewBox="0 0 64 64" fill="none" stroke="var(--ink)" stroke-width="2"><circle cx="32" cy="32" r="20"/></svg>`;
+      const badgeEl = document.createElement('div');
+      badgeEl.className = 'product-badge sale';
+      badgeEl.textContent = item.badge;
 
-      const actionBtn = item.stripe
-        ? `<a href="${item.stripe}" target="_blank" rel="noopener" class="buy-btn">Buy Now</a>`
-        : `<button class="buy-btn" onclick="addToCart('${item.title}')">Add To Cart</button>`;
+      const imageBox = document.createElement('div');
+      imageBox.className = 'product-image-box';
+      if (item.img) {
+        const imgEl = document.createElement('img');
+        imgEl.src = item.img;
+        imgEl.alt = item.title;
+        imgEl.style.width = '100%';
+        imgEl.style.height = '100%';
+        imgEl.style.objectFit = 'cover';
+        imageBox.appendChild(imgEl);
+      } else {
+        imageBox.innerHTML = '<svg viewBox="0 0 64 64" fill="none" stroke="var(--ink)" stroke-width="2"><circle cx="32" cy="32" r="20"/></svg>';
+      }
 
-      card.innerHTML = `
-        <div class="product-badge sale">${item.badge}</div>
-        <div class="product-image-box">${imgHTML}</div>
-        <div class="product-details">
-          <span class="product-category">${item.cat}</span>
-          <h3 class="product-title">${item.title}</h3>
-          <div class="product-meta">
-            <span class="product-price">${item.price}</span>
-            ${actionBtn}
-          </div>
-        </div>
-      `;
+      const details = document.createElement('div');
+      details.className = 'product-details';
+
+      const catEl = document.createElement('span');
+      catEl.className = 'product-category';
+      catEl.textContent = item.cat;
+
+      const titleEl = document.createElement('h3');
+      titleEl.className = 'product-title';
+      titleEl.textContent = item.title;
+
+      const meta = document.createElement('div');
+      meta.className = 'product-meta';
+
+      const priceEl = document.createElement('span');
+      priceEl.className = 'product-price';
+      priceEl.textContent = item.price;
+
+      let actionEl;
+      if (item.stripe) {
+        actionEl = document.createElement('a');
+        actionEl.href = item.stripe;
+        actionEl.target = '_blank';
+        actionEl.rel = 'noopener';
+        actionEl.className = 'buy-btn';
+        actionEl.textContent = 'Buy Now';
+      } else {
+        actionEl = document.createElement('button');
+        actionEl.className = 'buy-btn';
+        actionEl.type = 'button';
+        actionEl.textContent = 'Add To Cart';
+        actionEl.dataset.title = item.title;
+        actionEl.dataset.price = String(parseFloat((item.price || '').replace(/[^0-9.]/g, '')) || 0);
+        actionEl.dataset.img = item.img || '';
+        actionEl.onclick = () => addToCart(actionEl);
+      }
+
+      meta.append(priceEl, actionEl);
+      details.append(catEl, titleEl, meta);
+      card.append(badgeEl, imageBox, details);
       grid.prepend(card);
     });
   }
@@ -706,6 +1147,7 @@
   window.addEventListener('DOMContentLoaded', () => {
     applyCustomLogo();
     renderCustomListings();
+    renderCart();
   });
 </script>
 
