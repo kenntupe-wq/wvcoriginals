@@ -14,23 +14,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Alex+Brush&display=swap" rel="stylesheet">
 <style>
-  /* ---------- BASE & VARIABLES ---------- */
   :root{
-    --ink:#0b0b0c;
-    --paper:#f6f5f1;
-    --line:#1e1e1e;
-    --mid:#9a9892;
-    --faint:#d8d6cf;
-    --accent:#ae9461;
+    --ink:#0b0b0c; --paper:#f6f5f1; --line:#1e1e1e;
+    --mid:#9a9892; --faint:#d8d6cf; --accent:#ae9461;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
-  body{
-    background:var(--paper);
-    color:var(--ink);
-    font-family:'Inter',sans-serif;
-    overflow-x:hidden;
-  }
+  body{background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; overflow-x:hidden;}
   .mono{font-family:'JetBrains Mono',monospace;}
   .display{font-family:'Anton',sans-serif; text-transform:uppercase; letter-spacing:0.01em;}
 
@@ -38,34 +28,28 @@
   nav{
     position:fixed; top:0; left:0; right:0; z-index:100;
     display:flex; align-items:center; justify-content:space-between;
-    padding:18px 28px;
-    background:rgba(246,245,241,0.92);
-    backdrop-filter:blur(6px);
-    border-bottom:1px solid var(--line);
+    padding:18px 28px; background:rgba(246,245,241,0.92);
+    backdrop-filter:blur(6px); border-bottom:1px solid var(--line);
   }
   .brand{display:flex; align-items:center; gap:10px; cursor:pointer;}
-  .brand-mark{width:26px; height:26px; flex-shrink:0;}
+  .brand-mark{width:26px; height:26px; flex-shrink:0; object-fit:contain;}
   .brand-name{font-family:'Anton',sans-serif; font-size:17px; letter-spacing:0.04em; text-transform:uppercase;}
   .nav-links{display:flex; gap:26px; align-items:center;}
   .nav-links a{
     color:var(--ink); text-decoration:none; font-size:13px;
-    font-family:'JetBrains Mono',monospace; letter-spacing:0.06em; text-transform:uppercase;
-    position:relative;
+    font-family:'JetBrains Mono',monospace; letter-spacing:0.06em; text-transform:uppercase; position:relative;
   }
   .nav-links a::after{
-    content:''; position:absolute; left:0; bottom:-6px; width:0; height:1.5px; background:var(--ink);
-    transition:width 0.25s ease;
+    content:''; position:absolute; left:0; bottom:-6px; width:0; height:1.5px; background:var(--ink); transition:width 0.25s ease;
   }
   .nav-links a:hover::after{width:100%;}
+  .nav-utilities{display:flex; align-items:center; gap:20px; flex-shrink:0;}
   
-  .nav-utilities{display:flex; align-items:center; gap:20px;}
   .cart-btn{
     background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:6px;
     font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; text-transform:uppercase;
   }
-  .cart-count{
-    background:var(--ink); color:var(--paper); padding:2px 8px; border-radius:10px; font-size:11px;
-  }
+  .cart-count{background:var(--ink); color:var(--paper); padding:2px 8px; border-radius:10px; font-size:11px; transition:transform 0.15s ease;}
 
   .burger{display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none;}
   .burger span{width:24px; height:2px; background:var(--ink);}
@@ -81,260 +65,160 @@
     .nav-links a::after{background:var(--paper);}
     .burger{display:flex;}
   }
+  @media (max-width:480px){ nav{padding:16px 18px;} .nav-utilities{gap:12px;} }
 
   /* ---------- HERO ---------- */
   .hero{
-    min-height:95vh;
-    background:var(--ink);
-    color:var(--paper);
+    min-height:95vh; background:var(--ink); color:var(--paper);
     display:flex; flex-direction:column; justify-content:center;
-    padding:140px 28px 80px;
-    position:relative;
-    overflow:hidden;
+    padding:140px 28px 80px; position:relative; overflow:hidden;
   }
   .hero-watermark{
     position:absolute; right:-5%; top:50%; transform:translateY(-50%);
     width:55vw; max-width:540px; opacity:0.04; pointer-events:none;
   }
-  .kicker{
-    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.18em;
-    color:var(--mid); margin-bottom:16px; text-transform:uppercase;
-  }
+  .kicker{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.18em; color:var(--mid); margin-bottom:16px; text-transform:uppercase;}
   .kicker span{color:var(--paper);}
-  .hero h1{
-    font-family:'Anton',sans-serif;
-    font-size:clamp(52px, 11vw, 140px);
-    line-height:0.9;
-    text-transform:uppercase;
-    letter-spacing:0.01em;
-    max-width:1100px;
-  }
-  .hero h1 .script-inline {
-    font-family: 'Alex Brush', cursive;
-    text-transform: none;
-    color: var(--accent);
-    letter-spacing: 0;
-    font-size: clamp(60px, 12vw, 150px);
-    display: block;
-    margin-top: -10px; margin-bottom: 10px;
-  }
-  .hero-sub{
-    margin-top:24px; max-width:520px; font-size:16px; line-height:1.6; color:#cfcdc6;
-  }
+  .hero h1{font-family:'Anton',sans-serif; font-size:clamp(52px, 11vw, 140px); line-height:0.9; text-transform:uppercase; max-width:1100px;}
+  .hero h1 .script-inline{font-family:'Alex Brush',cursive; text-transform:none; color:var(--accent); font-size:clamp(60px,12vw,150px); display:block; margin:-10px 0 10px;}
+  .hero-sub{margin-top:24px; max-width:520px; font-size:16px; line-height:1.6; color:#cfcdc6;}
   .hero-ctas{display:flex; gap:16px; flex-wrap:wrap; margin-top:42px;}
   .hero-cta{
-    display:inline-flex; align-items:center; gap:14px;
-    background:var(--paper); color:var(--ink); padding:15px 28px;
-    font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.08em;
-    text-decoration:none; text-transform:uppercase; width:fit-content;
-    border:1px solid var(--paper); transition:all 0.25s ease;
+    display:inline-flex; align-items:center; gap:14px; background:var(--paper); color:var(--ink);
+    padding:15px 28px; font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.08em;
+    text-decoration:none; text-transform:uppercase; border:1px solid var(--paper); transition:all 0.25s ease;
   }
   .hero-cta:hover{background:transparent; color:var(--paper);}
   .hero-cta.secondary{background:transparent; color:var(--paper); border-color:var(--mid);}
   .hero-cta.secondary:hover{background:var(--paper); color:var(--ink);}
 
   /* ---------- TICKER ---------- */
-  .ticker-wrap{
-    background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-    overflow:hidden; padding:14px 0;
-  }
-  .ticker{
-    display:flex; white-space:nowrap; width:max-content;
-    animation:scroll 25s linear infinite;
-  }
-  .ticker span{
-    font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.1em;
-    text-transform:uppercase; padding:0 22px; display:flex; align-items:center; gap:22px;
-  }
+  .ticker-wrap{background:var(--paper); border-top:1px solid var(--line); border-bottom:1px solid var(--line); overflow:hidden; padding:14px 0;}
+  .ticker{display:flex; white-space:nowrap; width:max-content; animation:scroll 25s linear infinite;}
+  .ticker span{font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.1em; text-transform:uppercase; padding:0 22px; display:flex; align-items:center; gap:22px;}
   @keyframes scroll{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
 
-  /* ---------- STOREFRONT CATALOG ---------- */
+  /* ---------- CATALOG ---------- */
   section{padding:90px 28px;}
   .section-head{max-width:680px; margin:0 auto 50px; text-align:center;}
-  .section-head .kicker{color:var(--mid);}
-  .section-head h2{
-    font-family:'Anton',sans-serif; text-transform:uppercase; font-size:clamp(34px,5vw,56px);
-    line-height:1; margin-top:10px;
-  }
+  .section-head h2{font-family:'Anton',sans-serif; text-transform:uppercase; font-size:clamp(34px,5vw,56px); line-height:1; margin-top:10px;}
   .section-head p{margin-top:14px; font-size:16px; color:#4a4a4a; line-height:1.6;}
-
-  .catalog-controls{
-    display:flex; justify-content:center; gap:12px; margin-bottom:40px; flex-wrap:wrap;
-  }
+  .catalog-controls{display:flex; justify-content:center; gap:12px; margin-bottom:40px; flex-wrap:wrap;}
   .filter-btn{
     background:transparent; border:1px solid var(--faint); padding:10px 20px;
-    font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase;
-    letter-spacing:0.05em; cursor:pointer; transition:all 0.2s ease;
+    font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; cursor:pointer; transition:all 0.2s ease;
   }
-  .filter-btn.active, .filter-btn:hover{
-    background:var(--ink); color:var(--paper); border-color:var(--ink);
-  }
-
+  .filter-btn.active, .filter-btn:hover{background:var(--ink); color:var(--paper); border-color:var(--ink);}
   .catalog-container{max-width:1200px; margin:0 auto;}
-  .shop-grid{
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:30px;
-  }
-  .product-card{
-    background:var(--paper); border:1px solid var(--line); display:flex; flex-direction:column;
-    position:relative; transition:transform 0.3s ease;
-  }
-  .product-card:hover{ transform:translateY(-5px); }
+  .shop-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:30px;}
+  
+  .product-card{background:var(--paper); border:1px solid var(--line); display:flex; flex-direction:column; position:relative; transition:transform 0.3s ease;}
+  .product-card:hover{transform:translateY(-5px);}
   .product-image-box{
-    background:var(--faint); min-height:280px; position:relative;
-    display:flex; align-items:center; justify-content:center; overflow:hidden;
-    border-bottom:1px solid var(--line);
+    background:var(--faint); min-height:280px; position:relative; display:flex;
+    align-items:center; justify-content:center; overflow:hidden; border-bottom:1px solid var(--line);
   }
-  .product-image-box svg{
-    width:40%; height:40%; stroke:var(--ink); opacity:0.75; transition:transform 0.4s ease;
-  }
-  .product-card:hover .product-image-box svg{ transform:scale(1.12); }
-  .product-badge{
-    position:absolute; top:12px; left:12px; background:var(--ink); color:var(--paper);
-    padding:4px 10px; font-family:'JetBrains Mono',monospace; font-size:10px;
-    text-transform:uppercase; letter-spacing:0.05em;
-  }
-  .product-badge.sale{ background:var(--accent); }
-  .product-details{ padding:20px; display:flex; flex-direction:column; flex-grow:1; gap:6px; }
-  .product-category{ font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); text-transform:uppercase; }
-  .product-title{ font-family:'Anton',sans-serif; font-size:22px; text-transform:uppercase; line-height:1.1; margin:4px 0; }
-  .product-meta{
-    display:flex; justify-content:space-between; align-items:center; margin-top:auto;
-    padding-top:14px; border-top:1px dashed var(--faint);
-  }
-  .product-price{ font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; flex-grow:1; }
+  .product-image-box img{width:100%; height:100%; object-fit:cover;}
+  .product-image-box svg{width:40%; height:40%; stroke:var(--ink); opacity:0.75; transition:transform 0.4s ease;}
+  .product-card:hover .product-image-box svg{transform:scale(1.12);}
+  .product-badge{position:absolute; top:12px; left:12px; background:var(--ink); color:var(--paper); padding:4px 10px; font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase;}
+  .product-badge.sale{background:var(--accent);}
+  .product-details{padding:20px; display:flex; flex-direction:column; flex-grow:1; gap:6px;}
+  .product-category{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); text-transform:uppercase;}
+  .product-title{font-family:'Anton',sans-serif; font-size:22px; text-transform:uppercase; line-height:1.1; margin:4px 0;}
+  .product-meta{display:flex; justify-content:space-between; align-items:center; margin-top:auto; padding-top:14px; border-top:1px dashed var(--faint);}
+  .product-price{font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700;}
+  
   .buy-btn{
     background:var(--ink); color:var(--paper); border:1px solid var(--ink);
-    padding:8px 16px; font-family:'JetBrains Mono',monospace; font-size:11px;
-    text-transform:uppercase; cursor:pointer; transition:all 0.2s ease;
+    padding:8px 16px; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; cursor:pointer; text-decoration:none; transition:all 0.2s ease;
   }
-  .buy-btn:hover{ background:transparent; color:var(--ink); }
+  .buy-btn:hover{background:transparent; color:var(--ink);}
 
-  /* ---------- CUSTOM SHOP / LOGO PORTAL ---------- */
+  /* ---------- CUSTOM PORTAL ---------- */
   .custom-shop{background:#ebe9e1; border-top:1px solid var(--line); border-bottom:1px solid var(--line);}
   .custom-wrapper{max-width:1000px; margin:0 auto;}
   .custom-grid{display:grid; grid-template-columns:1fr 1.2fr; gap:50px; align-items:center;}
   @media(max-width:820px){.custom-grid{grid-template-columns:1fr; gap:30px;}}
-  
   .custom-info h3{font-family:'Anton',sans-serif; font-size:clamp(28px, 4vw, 44px); text-transform:uppercase; line-height:1.05; margin-bottom:16px;}
   .custom-info p{font-size:15px; line-height:1.6; color:#444; margin-bottom:24px;}
   .custom-features{list-style:none; display:flex; flex-direction:column; gap:12px;}
   .custom-features li{font-family:'JetBrains Mono',monospace; font-size:12px; display:flex; align-items:center; gap:10px; text-transform:uppercase;}
   .custom-features li::before{content:'✔'; color:var(--accent); font-size:14px;}
-
   .custom-form-box{background:var(--paper); border:1.5px solid var(--ink); padding:36px; box-shadow:8px 8px 0px var(--ink);}
   .form-group{margin-bottom:18px;}
   .form-group label{display:block; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; margin-bottom:6px; font-weight:700;}
   .form-control{width:100%; padding:12px 14px; border:1px solid var(--line); background:transparent; font-family:'Inter',sans-serif; font-size:13px; outline:none;}
   .form-row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
-
-  /* Logo Drag & Drop Area */
-  .file-drop-area{
-    border:2px dashed var(--mid); padding:26px; text-align:center; cursor:pointer;
-    background:rgba(255,255,255,0.4); transition:all 0.2s ease; position:relative;
-  }
-  .file-drop-area:hover{border-color:var(--ink); background:var(--paper);}
-  .file-drop-area input[type="file"]{position:absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer;}
+  .file-drop-area{border:2px dashed var(--mid); padding:26px; text-align:center; cursor:pointer; background:rgba(255,255,255,0.4); position:relative;}
+  .file-drop-area input[type="file"]{position:absolute; inset:0; opacity:0; cursor:pointer;}
   .file-msg{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--ink); display:block; margin-top:6px;}
   .file-submsg{font-size:10px; color:var(--mid); margin-top:4px; display:block;}
-
-  .submit-custom{
-    width:100%; background:var(--ink); color:var(--paper); border:none; padding:16px;
-    font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; text-transform:uppercase;
-    letter-spacing:0.06em; cursor:pointer; transition:opacity 0.2s; margin-top:10px;
-  }
-  .submit-custom:hover{opacity:0.85;}
-
-  /* Client Logo Showcase Strip */
+  .submit-custom{width:100%; background:var(--ink); color:var(--paper); border:none; padding:16px; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; text-transform:uppercase; cursor:pointer; margin-top:10px;}
+  
   .logo-showcase{margin-top:60px; border-top:1px dashed var(--mid); padding-top:30px; text-align:center;}
   .logo-showcase h4{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:20px;}
   .logo-track{display:flex; justify-content:center; align-items:center; gap:40px; flex-wrap:wrap; opacity:0.6;}
-  .logo-track img{max-height:35px; max-width:120px; object-fit:contain; filter:grayscale(100%); transition:all 0.3s;}
-  .logo-track img:hover{filter:grayscale(0%); opacity:1;}
   .dummy-logo{font-family:'Anton',sans-serif; font-size:18px; letter-spacing:0.05em; color:var(--ink);}
 
-  /* ---------- BRAND STORY / HERITAGE ---------- */
+  /* ---------- ABOUT & FOOTER ---------- */
   .about{background:var(--ink); color:var(--paper); text-align:center;}
   .about-inner{max-width:880px; margin:0 auto;}
-  .about blockquote{
-    font-family:'Anton',sans-serif; text-transform:uppercase; font-size:clamp(28px,5vw,46px);
-    line-height:1.15; max-width:800px; margin:0 auto;
-  }
-  .about blockquote span.highlight{ color:var(--accent); }
-  .stat-row{ display:flex; justify-content:center; gap:60px; margin-top:60px; flex-wrap:wrap; }
-  .stat-num{ font-family:'Anton',sans-serif; font-size:34px; }
-  .stat-label{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; color:var(--mid); text-transform:uppercase; margin-top:6px; }
-
-  /* ---------- NEWSLETTER SIGNUP ---------- */
+  .about blockquote{font-family:'Anton',sans-serif; text-transform:uppercase; font-size:clamp(28px,5vw,46px); line-height:1.15;}
+  .about blockquote span.highlight{color:var(--accent);}
+  .stat-row{display:flex; justify-content:center; gap:60px; margin-top:60px; flex-wrap:wrap;}
+  .stat-num{font-family:'Anton',sans-serif; font-size:34px;}
+  .stat-label{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; color:var(--mid); text-transform:uppercase; margin-top:6px;}
+  
   .join{text-align:center; background:#ecebe6;}
   .join-inner{max-width:560px; margin:0 auto;}
-  .join h2{font-family:'Anton',sans-serif; text-transform:uppercase; font-size:clamp(32px,6vw,52px); line-height:1.05;}
+  .join h2{font-family:'Anton',sans-serif; text-transform:uppercase; font-size:clamp(32px,6vw,52px);}
   .join p{margin-top:16px; color:#3a3a3a; font-size:15px;}
-  .join-form{
-    margin-top:34px; display:flex; gap:0; border:1.5px solid var(--ink); max-width:460px; margin:0 auto; background:var(--paper);
-  }
-  .join-form input{ flex:1; border:none; background:transparent; padding:16px 18px; font-family:'JetBrains Mono',monospace; font-size:13px; outline:none; color:var(--ink); }
-  .join-form button{ border:none; background:var(--ink); color:var(--paper); padding:0 26px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; }
+  .join-form{margin-top:34px; display:flex; border:1.5px solid var(--ink); max-width:460px; margin:0 auto; background:var(--paper);}
+  .join-form input{flex:1; border:none; background:transparent; padding:16px 18px; font-family:'JetBrains Mono',monospace; font-size:13px; outline:none; color:var(--ink);}
+  .join-form button{border:none; background:var(--ink); color:var(--paper); padding:0 26px; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; cursor:pointer;}
   .join-note{margin-top:14px; font-size:12px; color:var(--mid); font-family:'JetBrains Mono',monospace;}
 
-  /* ---------- FOOTER ---------- */
-  footer{
-    border-top:1px solid var(--line); padding:40px 28px; display:flex; align-items:center;
-    justify-content:space-between; flex-wrap:wrap; gap:16px;
-  }
+  footer{border-top:1px solid var(--line); padding:40px 28px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;}
   .footer-links{display:flex; gap:24px; flex-wrap:wrap;}
-  .footer-links a, .footer-links button{
-    color:var(--ink); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:12px;
-    text-transform:uppercase; background:none; border:none; cursor:pointer; padding:0;
-  }
-  .footer-fine{width:100%; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); margin-top:14px; line-height:1.6;}
+  .footer-links a, .footer-links button{color:var(--ink); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase; background:none; border:none; cursor:pointer; padding:0;}
+  .footer-fine{width:100%; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); margin-top:14px; line-height:1.6; user-select:none;}
   .footer-disclaimer{width:100%; font-size:11px; color:var(--mid); margin-top:6px; line-height:1.6; max-width:760px;}
 
-  /* ---------- LEGAL MODALS ---------- */
-  .modal-overlay{
-    position:fixed; inset:0; background:rgba(11,11,12,0.72); display:none;
-    align-items:center; justify-content:center; z-index:1000; padding:24px;
-  }
+  /* ---------- MODALS & TOAST ---------- */
+  .modal-overlay{position:fixed; inset:0; background:rgba(11,11,12,0.72); display:none; align-items:center; justify-content:center; z-index:1000; padding:24px;}
   .modal-overlay.open{display:flex;}
-  .modal-box{
-    background:var(--paper); border:1.5px solid var(--ink); max-width:640px; width:100%;
-    max-height:80vh; overflow-y:auto; padding:36px; position:relative; box-shadow:8px 8px 0px var(--ink);
-  }
+  .modal-box{background:var(--paper); border:1.5px solid var(--ink); max-width:640px; width:100%; max-height:80vh; overflow-y:auto; padding:36px; position:relative; box-shadow:8px 8px 0px var(--ink);}
   .modal-box h3{font-family:'Anton',sans-serif; text-transform:uppercase; font-size:28px; margin-bottom:16px;}
   .modal-box h4{font-family:'JetBrains Mono',monospace; font-size:13px; text-transform:uppercase; margin:20px 0 8px;}
   .modal-box p, .modal-box li{font-size:14px; line-height:1.7; color:#333;}
   .modal-box ul{padding-left:20px; margin-bottom:10px;}
-  .modal-close{
-    position:absolute; top:18px; right:18px; background:none; border:none; cursor:pointer;
-    font-family:'JetBrains Mono',monospace; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;
-  }
+  .modal-close{position:absolute; top:18px; right:18px; background:none; border:none; cursor:pointer; font-family:'JetBrains Mono',monospace; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;}
   .modal-updated{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); margin-bottom:20px;}
-
-  /* ---------- MISC FIXES ---------- */
-  .nav-utilities{ flex-shrink:0; }
-  @media (max-width:480px){
-    nav{padding:16px 18px;}
-    .nav-utilities{gap:12px;}
-  }
-  .visually-hidden{
-    position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap;
-  }
+  
+  .visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap;}
   .toast{
     position:fixed; bottom:24px; right:24px; background:var(--ink); color:var(--paper);
     padding:14px 20px; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase;
-    letter-spacing:0.05em; z-index:1100; opacity:0; transform:translateY(10px);
-    transition:opacity 0.25s ease, transform 0.25s ease; pointer-events:none;
+    z-index:1100; opacity:0; transform:translateY(10px); transition:all 0.25s ease; pointer-events:none;
   }
   .toast.show{opacity:1; transform:translateY(0);}
+
+  /* ---------- ADMIN PORTAL STYLES ---------- */
+  #admin-modal .modal-box { border-color: var(--accent); box-shadow: 8px 8px 0px var(--accent); max-width: 550px;}
+  .admin-badge { background: var(--accent); color: white; padding: 2px 6px; font-size: 10px; border-radius: 4px; vertical-align: middle;}
+  .admin-section { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--faint); }
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" role="button" tabindex="0" aria-label="Back to top" onkeydown="if(event.key==='Enter')window.scrollTo({top:0,behavior:'smooth'});">
-    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <div class="brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" role="button" tabindex="0" aria-label="Back to top">
+    <svg id="defaultLogoMark" class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <polygon points="50,4 92,46 50,46 8,46" fill="none" stroke="var(--ink)" stroke-width="6"/>
       <polygon points="50,96 92,54 50,54 8,54" fill="none" stroke="var(--ink)" stroke-width="6"/>
     </svg>
+    <img id="customLogoMark" class="brand-mark" style="display:none;" alt="Brand Logo">
     <span class="brand-name">WVC Originals</span>
   </div>
   <div class="nav-links" id="navLinks">
@@ -344,11 +228,11 @@
     <a href="#join">Newsletter</a>
   </div>
   <div class="nav-utilities">
-    <button class="cart-btn" aria-label="View cart, items in cart:">
+    <button class="cart-btn" aria-label="View cart" onclick="showToast('Viewing Cart...')">
       <span>Cart</span>
-      <span class="cart-count" id="cartCounter" aria-live="polite">0</span>
+      <span class="cart-count" id="cartCounter">0</span>
     </button>
-    <button class="burger" id="burgerBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
+    <button class="burger" id="burgerBtn" aria-label="Toggle menu" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -398,8 +282,7 @@
     <button class="filter-btn" aria-pressed="false" onclick="filterCatalog('decals', this)">Decals &amp; Goods</button>
   </div>
 
-  <div class="shop-grid">
-    <!-- Item 1: Apparel -->
+  <div class="shop-grid" id="dynamicGrid">
     <div class="product-card" data-category="apparel">
       <div class="product-badge">Originals Box Fit</div>
       <div class="product-image-box">
@@ -408,11 +291,10 @@
       <div class="product-details">
         <span class="product-category">Shirts &amp; Apparel</span>
         <h3 class="product-title">"Best Valley" Heavyweight Tee</h3>
-        <div class="product-meta"><span class="product-price">$32.00</span><button class="buy-btn" onclick="addToCart('&quot;Best Valley&quot; Heavyweight Tee', this)" aria-label="Add &quot;Best Valley&quot; Heavyweight Tee to cart">Add To Cart</button></div>
+        <div class="product-meta"><span class="product-price">$32.00</span><button class="buy-btn" onclick="addToCart('&quot;Best Valley&quot; Heavyweight Tee')">Add To Cart</button></div>
       </div>
     </div>
 
-    <!-- Item 2: Bottles -->
     <div class="product-card" data-category="bottles">
       <div class="product-badge">Insulated</div>
       <div class="product-image-box">
@@ -421,11 +303,10 @@
       <div class="product-details">
         <span class="product-category">Bottles &amp; Flasks</span>
         <h3 class="product-title">Centennial 24oz Insulated Bottle</h3>
-        <div class="product-meta"><span class="product-price">$38.00</span><button class="buy-btn" onclick="addToCart('Centennial 24oz Insulated Bottle', this)" aria-label="Add Centennial 24oz Insulated Bottle to cart">Add To Cart</button></div>
+        <div class="product-meta"><span class="product-price">$38.00</span><button class="buy-btn" onclick="addToCart('Centennial 24oz Insulated Bottle')">Add To Cart</button></div>
       </div>
     </div>
 
-    <!-- Item 3: Decals -->
     <div class="product-card" data-category="decals">
       <div class="product-badge">Weatherproof</div>
       <div class="product-image-box">
@@ -434,15 +315,12 @@
       <div class="product-details">
         <span class="product-category">Decals &amp; Goods</span>
         <h3 class="product-title">Classic 801 Die-Cut Car Decal</h3>
-        <div class="product-meta"><span class="product-price">$8.00</span><button class="buy-btn" onclick="addToCart('Classic 801 Die-Cut Car Decal', this)" aria-label="Add Classic 801 Die-Cut Car Decal to cart">Add To Cart</button></div>
+        <div class="product-meta"><span class="product-price">$8.00</span><button class="buy-btn" onclick="addToCart('Classic 801 Die-Cut Car Decal')">Add To Cart</button></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ========================================== -->
-<!-- NEW: CUSTOM SHOP & LOGO UPLOAD SECTION    -->
-<!-- ========================================== -->
 <section id="custom-portal" class="custom-shop">
   <div class="custom-wrapper">
     <div class="custom-grid">
@@ -494,7 +372,7 @@
             <div class="file-drop-area">
               <span class="file-msg" id="file-label">Drag &amp; Drop Artwork Here</span>
               <span class="file-submsg">Accepts .AI, .PNG, .SVG, or .PSD (Max 25MB)</span>
-              <input type="file" id="custom-file" name="artwork" accept="image/*,.ai,.psd,.pdf" aria-label="Upload your logo file" onchange="document.getElementById('file-label').textContent = this.files[0] ? this.files[0].name : 'Drag &amp; Drop Artwork Here';">
+              <input type="file" id="custom-file" name="artwork" accept="image/*,.ai,.psd,.pdf" onchange="document.getElementById('file-label').textContent = this.files[0] ? this.files[0].name : 'Drag &amp; Drop Artwork Here';">
             </div>
             <span class="file-submsg" style="display:block; margin-top:6px;">By uploading, you confirm you own this artwork or have permission to use it.</span>
           </div>
@@ -506,19 +384,13 @@
 
     </div>
 
-    <!-- OWNER LOGO STRIP: PUT YOUR OWN LOGOS OR PARTNERS HERE -->
     <div class="logo-showcase">
       <h4>Built For Crews Like Yours</h4>
       <div class="logo-track">
-        <!-- LIVE SITE NOTE: These are placeholder examples only — swap them for your real, confirmed clients
-             (with permission) before launch. Do not display a business's name/logo as a client unless they've
-             actually ordered from you and agreed to be featured; doing otherwise can be considered false advertising. -->
         <span class="dummy-logo">YOUR CREW HERE</span>
         <span class="dummy-logo">LOCAL CAR CLUB</span>
         <span class="dummy-logo">801 GYM</span>
         <span class="dummy-logo">YOUR SHOP NAME</span>
-        <!-- <img src="your-client-logo-1.png" alt="Client business name"> -->
-        <!-- <img src="your-client-logo-2.png" alt="Client business name"> -->
       </div>
     </div>
 
@@ -565,12 +437,12 @@
     <button type="button" onclick="openModal('modal-terms')">Terms of Service</button>
     <button type="button" onclick="openModal('modal-shipping')">Shipping &amp; Returns</button>
   </div>
-  <div class="footer-fine">© 2026 WVC Originals — established in the 801. Independent label.</div>
+  <div class="footer-fine" ondblclick="triggerAdminPrompt()" title="Double click for Admin Access">© 2026 WVC Originals — established in the 801. Independent label.</div>
   <div class="footer-disclaimer">WVC Originals is an independently owned and operated apparel brand. It is not affiliated with, endorsed by, or sponsored by the City of West Valley, Utah, or any of its departments. "Unity. Pride. Progress." is referenced as a tribute to our hometown, not as an official city communication.</div>
 </footer>
 
 <!-- ========================================== -->
-<!-- LEGAL MODALS                               -->
+<!-- RESTORED LEGAL MODALS                      -->
 <!-- ========================================== -->
 <div class="modal-overlay" id="modal-privacy" onclick="if(event.target===this) closeModal('modal-privacy')">
   <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
@@ -638,9 +510,46 @@
   </div>
 </div>
 
+<!-- HIDDEN ADMIN PORTAL MODAL -->
+<div class="modal-overlay" id="admin-modal" onclick="if(event.target===this) closeModal('admin-modal')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('admin-modal')">✕</button>
+    <h3>Command Center <span class="admin-badge">ADMIN</span></h3>
+    <p style="font-size:12px; color:var(--mid); margin-bottom:15px;">Changes made here save locally to your browser via LocalStorage.</p>
+
+    <div class="form-group">
+      <label>Top-Left Brand Logo URL</label>
+      <input type="text" id="adminLogoInput" class="form-control" placeholder="https://yourdomain.com/logo.png">
+      <button class="buy-btn" style="margin-top:8px;" onclick="saveCustomLogo()">Update Brand Mark</button>
+      <button class="buy-btn" style="background:transparent; color:red; border-color:red;" onclick="resetLogo()">Reset Default</button>
+    </div>
+
+    <div class="admin-section">
+      <h4 style="margin-top:0;">Add New Store Listing</h4>
+      <div class="form-group"><label>Product Title</label><input type="text" id="addTitle" class="form-control" placeholder="e.g. 3500 South Hoodie"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Price (e.g. $45.00)</label><input type="text" id="addPrice" class="form-control" placeholder="$45.00"></div>
+        <div class="form-group"><label>Category</label><select id="addCat" class="form-control"><option value="apparel">Apparel</option><option value="bottles">Bottles</option><option value="decals">Decals</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Badge Text</label><input type="text" id="addBadge" class="form-control" placeholder="New Release"></div>
+        <div class="form-group"><label>Image URL</label><input type="text" id="addImg" class="form-control" placeholder="https://.../shirt.jpg"></div>
+      </div>
+      <div class="form-group">
+        <label>Stripe Payment Link (Checkout URL)</label>
+        <input type="text" id="addStripe" class="form-control" placeholder="https://buy.stripe.com/...">
+      </div>
+      <button class="submit-custom" onclick="addNewListing()">Inject Listing To Grid</button>
+      <button class="buy-btn" style="margin-top:15px; width:100%; text-align:center; background:#ff4444; border-color:#ff4444;" onclick="clearCustomListings()">Clear All Added Listings</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
+  const ADMIN_PASSWORD = "valley801"; // <--- CHANGE YOUR ADMIN PASSWORD HERE
+
   const burger = document.getElementById('burgerBtn');
   const navLinks = document.getElementById('navLinks');
   burger.addEventListener('click', () => {
@@ -653,58 +562,150 @@
   }));
 
   let cartCount = 0;
-  function addToCart(productName, btn) {
-    cartCount++;
-    const counter = document.getElementById('cartCounter');
-    counter.textContent = cartCount;
-    counter.style.transform = 'scale(1.3)';
-    setTimeout(() => { counter.style.transform = 'scale(1)'; }, 150);
-    showToast((productName || 'Item') + ' added to cart');
+  function addToCart(item) {
+    document.getElementById('cartCounter').textContent = (++cartCount);
+    showToast(item + ' added to cart');
   }
 
-  let toastTimer;
-  function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
   }
 
-  function filterCatalog(category, button) {
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.classList.remove('active');
-      btn.setAttribute('aria-pressed', 'false');
+  function filterCatalog(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
     });
-    button.classList.add('active');
-    button.setAttribute('aria-pressed', 'true');
-    const cards = document.querySelectorAll('.product-card');
-    cards.forEach(card => {
-      card.style.display = (category === 'all' || card.getAttribute('data-category') === category) ? 'flex' : 'none';
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
+    document.querySelectorAll('.product-card').forEach(c => {
+      c.style.display = (cat === 'all' || c.dataset.category === cat) ? 'flex' : 'none';
     });
   }
 
-  function handleCustomSubmit(e) {
-    e.preventDefault();
-    const form = document.getElementById('customForm');
-    document.getElementById('customFormSuccess').style.display = 'block';
-    form.reset();
-    document.getElementById('file-label').textContent = 'Drag & Drop Artwork Here';
-    showToast('Custom run request sent');
-  }
-
-  function openModal(id) {
-    document.getElementById(id).classList.add('open');
+  function openModal(id) { 
+    document.getElementById(id).classList.add('open'); 
     document.body.style.overflow = 'hidden';
   }
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
+  function closeModal(id) { 
+    document.getElementById(id).classList.remove('open'); 
     document.body.style.overflow = '';
   }
-  document.addEventListener('keydown', (e) => {
+  
+  function handleCustomSubmit(e) {
+    e.preventDefault(); 
+    document.getElementById('customFormSuccess').style.display = 'block';
+    showToast('Custom Quote Requested'); 
+    e.target.reset();
+    document.getElementById('file-label').textContent = 'Drag & Drop Artwork Here';
+  }
+
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyA') triggerAdminPrompt();
     if (e.key === 'Escape') {
       document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
     }
+  });
+
+  function triggerAdminPrompt() {
+    const pass = prompt("Enter WVC Command Center Password:");
+    if (pass === ADMIN_PASSWORD) openModal('admin-modal');
+    else if (pass !== null) alert("Access Denied.");
+  }
+
+  function saveCustomLogo() {
+    const url = document.getElementById('adminLogoInput').value;
+    if(!url) return;
+    localStorage.setItem('wvc_custom_logo', url);
+    applyCustomLogo();
+    showToast('Logo Updated!');
+  }
+
+  function resetLogo() {
+    localStorage.removeItem('wvc_custom_logo');
+    applyCustomLogo();
+    showToast('Logo Reset');
+  }
+
+  function applyCustomLogo() {
+    const saved = localStorage.getItem('wvc_custom_logo');
+    const def = document.getElementById('defaultLogoMark');
+    const cust = document.getElementById('customLogoMark');
+    if (saved) {
+      def.style.display = 'none'; cust.src = saved; cust.style.display = 'block';
+    } else {
+      def.style.display = 'block'; cust.style.display = 'none';
+    }
+  }
+
+  function addNewListing() {
+    const title = document.getElementById('addTitle').value;
+    const price = document.getElementById('addPrice').value;
+    const cat = document.getElementById('addCat').value;
+    const badge = document.getElementById('addBadge').value || 'WVC';
+    const img = document.getElementById('addImg').value;
+    const stripe = document.getElementById('addStripe').value;
+
+    if(!title || !price) { alert("Title and Price are strictly required."); return; }
+
+    const newItem = { title, price, cat, badge, img, stripe };
+    const existing = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
+    existing.push(newItem);
+    localStorage.setItem('wvc_custom_products', JSON.stringify(existing));
+
+    renderCustomListings();
+    closeModal('admin-modal');
+    showToast('Listing Added!');
+  }
+
+  function renderCustomListings() {
+    const grid = document.getElementById('dynamicGrid');
+    grid.querySelectorAll('.dynamic-item').forEach(e => e.remove());
+
+    const customItems = JSON.parse(localStorage.getItem('wvc_custom_products') || '[]');
+    
+    customItems.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'product-card dynamic-item';
+      card.dataset.category = item.cat;
+
+      const imgHTML = item.img 
+        ? `<img src="${item.img}" alt="${item.title}" style="width:100%; height:100%; object-fit:cover;">` 
+        : `<svg viewBox="0 0 64 64" fill="none" stroke="var(--ink)" stroke-width="2"><circle cx="32" cy="32" r="20"/></svg>`;
+
+      const actionBtn = item.stripe
+        ? `<a href="${item.stripe}" target="_blank" rel="noopener" class="buy-btn">Buy Now</a>`
+        : `<button class="buy-btn" onclick="addToCart('${item.title}')">Add To Cart</button>`;
+
+      card.innerHTML = `
+        <div class="product-badge sale">${item.badge}</div>
+        <div class="product-image-box">${imgHTML}</div>
+        <div class="product-details">
+          <span class="product-category">${item.cat}</span>
+          <h3 class="product-title">${item.title}</h3>
+          <div class="product-meta">
+            <span class="product-price">${item.price}</span>
+            ${actionBtn}
+          </div>
+        </div>
+      `;
+      grid.prepend(card);
+    });
+  }
+
+  function clearCustomListings() {
+    if(confirm("Are you sure you want to wipe your added products?")) {
+      localStorage.removeItem('wvc_custom_products');
+      renderCustomListings();
+      showToast('Custom listings cleared');
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    applyCustomLogo();
+    renderCustomListings();
   });
 </script>
 
