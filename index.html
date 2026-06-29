@@ -3,8 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WVC Originals | True To The Valley </title>
+<title>WVC Originals | True To The Valley</title>
+<meta name="description" content="Independent West Valley City streetwear: heavyweight tees, insulated bottles, and die-cut decals. Custom business runs available. Repping the 801.">
+<meta name="theme-color" content="#0b0b0c">
+<meta property="og:title" content="WVC Originals | True To The Valley">
+<meta property="og:description" content="Independent West Valley City streetwear and custom merch — heavyweight tees, bottles, decals, and bulk business runs.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,4 92,46 50,46 8,46' fill='%230b0b0c'/%3E%3Cpolygon points='50,96 92,54 50,54 8,54' fill='%230b0b0c'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Alex+Brush&display=swap" rel="stylesheet">
 <style>
   /* ---------- BASE & VARIABLES ---------- */
@@ -274,16 +281,57 @@
     border-top:1px solid var(--line); padding:40px 28px; display:flex; align-items:center;
     justify-content:space-between; flex-wrap:wrap; gap:16px;
   }
-  .footer-links{display:flex; gap:24px;}
-  .footer-links a{color:var(--ink); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase;}
-  .footer-fine{width:100%; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); margin-top:14px;}
+  .footer-links{display:flex; gap:24px; flex-wrap:wrap;}
+  .footer-links a, .footer-links button{
+    color:var(--ink); text-decoration:none; font-family:'JetBrains Mono',monospace; font-size:12px;
+    text-transform:uppercase; background:none; border:none; cursor:pointer; padding:0;
+  }
+  .footer-fine{width:100%; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); margin-top:14px; line-height:1.6;}
+  .footer-disclaimer{width:100%; font-size:11px; color:var(--mid); margin-top:6px; line-height:1.6; max-width:760px;}
+
+  /* ---------- LEGAL MODALS ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(11,11,12,0.72); display:none;
+    align-items:center; justify-content:center; z-index:1000; padding:24px;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal-box{
+    background:var(--paper); border:1.5px solid var(--ink); max-width:640px; width:100%;
+    max-height:80vh; overflow-y:auto; padding:36px; position:relative; box-shadow:8px 8px 0px var(--ink);
+  }
+  .modal-box h3{font-family:'Anton',sans-serif; text-transform:uppercase; font-size:28px; margin-bottom:16px;}
+  .modal-box h4{font-family:'JetBrains Mono',monospace; font-size:13px; text-transform:uppercase; margin:20px 0 8px;}
+  .modal-box p, .modal-box li{font-size:14px; line-height:1.7; color:#333;}
+  .modal-box ul{padding-left:20px; margin-bottom:10px;}
+  .modal-close{
+    position:absolute; top:18px; right:18px; background:none; border:none; cursor:pointer;
+    font-family:'JetBrains Mono',monospace; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;
+  }
+  .modal-updated{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--mid); margin-bottom:20px;}
+
+  /* ---------- MISC FIXES ---------- */
+  .nav-utilities{ flex-shrink:0; }
+  @media (max-width:480px){
+    nav{padding:16px 18px;}
+    .nav-utilities{gap:12px;}
+  }
+  .visually-hidden{
+    position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap;
+  }
+  .toast{
+    position:fixed; bottom:24px; right:24px; background:var(--ink); color:var(--paper);
+    padding:14px 20px; font-family:'JetBrains Mono',monospace; font-size:12px; text-transform:uppercase;
+    letter-spacing:0.05em; z-index:1100; opacity:0; transform:translateY(10px);
+    transition:opacity 0.25s ease, transform 0.25s ease; pointer-events:none;
+  }
+  .toast.show{opacity:1; transform:translateY(0);}
 </style>
 </head>
 <body>
 
 <nav>
-  <div class="brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'});">
-    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <div class="brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" role="button" tabindex="0" aria-label="Back to top" onkeydown="if(event.key==='Enter')window.scrollTo({top:0,behavior:'smooth'});">
+    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <polygon points="50,4 92,46 50,46 8,46" fill="none" stroke="var(--ink)" stroke-width="6"/>
       <polygon points="50,96 92,54 50,54 8,54" fill="none" stroke="var(--ink)" stroke-width="6"/>
     </svg>
@@ -296,18 +344,18 @@
     <a href="#join">Newsletter</a>
   </div>
   <div class="nav-utilities">
-    <button class="cart-btn" aria-label="View Cart">
+    <button class="cart-btn" aria-label="View cart, items in cart:">
       <span>Cart</span>
-      <span class="cart-count" id="cartCounter">0</span>
+      <span class="cart-count" id="cartCounter" aria-live="polite">0</span>
     </button>
-    <button class="burger" id="burgerBtn" aria-label="Toggle menu">
+    <button class="burger" id="burgerBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="navLinks">
       <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
 
 <section class="hero">
-  <svg class="hero-watermark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <svg class="hero-watermark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <polygon points="50,4 92,46 50,46 8,46" fill="none" stroke="var(--paper)" stroke-width="3"/>
     <polygon points="50,96 92,54 50,54 8,54" fill="none" stroke="var(--paper)" stroke-width="3"/>
   </svg>
@@ -343,11 +391,11 @@
     <p>Permanent inventory staples combined with limited custom releases. Filter by category below to browse the current run.</p>
   </div>
 
-  <div class="catalog-controls">
-    <button class="filter-btn active" onclick="filterCatalog('all', this)">All Products</button>
-    <button class="filter-btn" onclick="filterCatalog('apparel', this)">Shirts &amp; Apparel</button>
-    <button class="filter-btn" onclick="filterCatalog('bottles', this)">Bottles &amp; Flasks</button>
-    <button class="filter-btn" onclick="filterCatalog('decals', this)">Decals &amp; Goods</button>
+  <div class="catalog-controls" role="group" aria-label="Filter products by category">
+    <button class="filter-btn active" aria-pressed="true" onclick="filterCatalog('all', this)">All Products</button>
+    <button class="filter-btn" aria-pressed="false" onclick="filterCatalog('apparel', this)">Shirts &amp; Apparel</button>
+    <button class="filter-btn" aria-pressed="false" onclick="filterCatalog('bottles', this)">Bottles &amp; Flasks</button>
+    <button class="filter-btn" aria-pressed="false" onclick="filterCatalog('decals', this)">Decals &amp; Goods</button>
   </div>
 
   <div class="shop-grid">
@@ -355,12 +403,12 @@
     <div class="product-card" data-category="apparel">
       <div class="product-badge">Originals Box Fit</div>
       <div class="product-image-box">
-        <svg viewBox="0 0 64 64" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12 L14 20 L20 26 L24 22 V52 H40 V22 L44 26 L50 20 L42 12 Z"/></svg>
+        <svg viewBox="0 0 64 64" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12 L14 20 L20 26 L24 22 V52 H40 V22 L44 26 L50 20 L42 12 Z"/></svg>
       </div>
       <div class="product-details">
         <span class="product-category">Shirts &amp; Apparel</span>
         <h3 class="product-title">"Best Valley" Heavyweight Tee</h3>
-        <div class="product-meta"><span class="product-price">$32.00</span><button class="buy-btn" onclick="addToCart()">Add To Cart</button></div>
+        <div class="product-meta"><span class="product-price">$32.00</span><button class="buy-btn" onclick="addToCart('&quot;Best Valley&quot; Heavyweight Tee', this)" aria-label="Add &quot;Best Valley&quot; Heavyweight Tee to cart">Add To Cart</button></div>
       </div>
     </div>
 
@@ -368,12 +416,12 @@
     <div class="product-card" data-category="bottles">
       <div class="product-badge">Insulated</div>
       <div class="product-image-box">
-        <svg viewBox="0 0 64 64" fill="none" stroke-width="2.2" stroke-linejoin="round"><path d="M26 8h12v8l4 4v36a3 3 0 0 1-3 3H25a3 3 0 0 1-3-3V20l4-4z"/><line x1="22" y1="34" x2="42" y2="34"/></svg>
+        <svg viewBox="0 0 64 64" fill="none" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M26 8h12v8l4 4v36a3 3 0 0 1-3 3H25a3 3 0 0 1-3-3V20l4-4z"/><line x1="22" y1="34" x2="42" y2="34"/></svg>
       </div>
       <div class="product-details">
         <span class="product-category">Bottles &amp; Flasks</span>
-        <h3 class="product-title">Centennial 24oz Hydro Flask</h3>
-        <div class="product-meta"><span class="product-price">$38.00</span><button class="buy-btn" onclick="addToCart()">Add To Cart</button></div>
+        <h3 class="product-title">Centennial 24oz Insulated Bottle</h3>
+        <div class="product-meta"><span class="product-price">$38.00</span><button class="buy-btn" onclick="addToCart('Centennial 24oz Insulated Bottle', this)" aria-label="Add Centennial 24oz Insulated Bottle to cart">Add To Cart</button></div>
       </div>
     </div>
 
@@ -381,12 +429,12 @@
     <div class="product-card" data-category="decals">
       <div class="product-badge">Weatherproof</div>
       <div class="product-image-box">
-        <svg viewBox="0 0 64 64" fill="none" stroke-width="2.2"><rect x="14" y="10" width="36" height="46" rx="3"/><line x1="14" y1="22" x2="50" y2="22"/><path d="M20 36 L28 30 L36 40 L44 28" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg viewBox="0 0 64 64" fill="none" stroke-width="2.2" aria-hidden="true"><rect x="14" y="10" width="36" height="46" rx="3"/><line x1="14" y1="22" x2="50" y2="22"/><path d="M20 36 L28 30 L36 40 L44 28" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="product-details">
         <span class="product-category">Decals &amp; Goods</span>
         <h3 class="product-title">Classic 801 Die-Cut Car Decal</h3>
-        <div class="product-meta"><span class="product-price">$8.00</span><button class="buy-btn" onclick="addToCart()">Add To Cart</button></div>
+        <div class="product-meta"><span class="product-price">$8.00</span><button class="buy-btn" onclick="addToCart('Classic 801 Die-Cut Car Decal', this)" aria-label="Add Classic 801 Die-Cut Car Decal to cart">Add To Cart</button></div>
       </div>
     </div>
   </div>
@@ -413,17 +461,17 @@
       </div>
 
       <div class="custom-form-box">
-        <form onsubmit="event.preventDefault(); alert('Custom Request Sent! We will review your logo and email a quote within 24 hours.'); this.reset(); document.getElementById('file-label').textContent='Drag & Drop Artwork Here';">
-          
+        <form id="customForm" onsubmit="handleCustomSubmit(event)">
+
           <div class="form-group">
-            <label>Your Name / Organization</label>
-            <input type="text" class="form-control" placeholder="e.g. Valley Barbell Club" required>
+            <label for="custom-name">Your Name / Organization</label>
+            <input type="text" id="custom-name" name="organization" class="form-control" placeholder="e.g. Valley Barbell Club" required>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label>Gear Base</label>
-              <select class="form-control" required>
+              <label for="custom-gear">Gear Base</label>
+              <select id="custom-gear" name="gearBase" class="form-control" required>
                 <option value="Tees">Heavyweight Tees</option>
                 <option value="Hoodies">Box-Fit Hoodies</option>
                 <option value="Bottles">24oz Insulated Bottles</option>
@@ -431,26 +479,28 @@
               </select>
             </div>
             <div class="form-group">
-              <label>Estimated Units</label>
-              <input type="number" class="form-control" placeholder="Min. 12" min="12" required>
+              <label for="custom-units">Estimated Units</label>
+              <input type="number" id="custom-units" name="units" class="form-control" placeholder="Min. 12" min="12" required>
             </div>
           </div>
 
           <div class="form-group">
-            <label>Email Address</label>
-            <input type="email" class="form-control" placeholder="local@valley.com" required>
+            <label for="custom-email">Email Address</label>
+            <input type="email" id="custom-email" name="email" class="form-control" placeholder="local@valley.com" required>
           </div>
 
           <div class="form-group">
-            <label>Upload Your Logo File</label>
+            <label for="custom-file">Upload Your Logo File</label>
             <div class="file-drop-area">
               <span class="file-msg" id="file-label">Drag &amp; Drop Artwork Here</span>
               <span class="file-submsg">Accepts .AI, .PNG, .SVG, or .PSD (Max 25MB)</span>
-              <input type="file" accept="image/*,.ai,.psd,.pdf" onchange="document.getElementById('file-label').textContent = this.files[0] ? this.files[0].name : 'Drag & Drop Artwork Here';">
+              <input type="file" id="custom-file" name="artwork" accept="image/*,.ai,.psd,.pdf" aria-label="Upload your logo file" onchange="document.getElementById('file-label').textContent = this.files[0] ? this.files[0].name : 'Drag &amp; Drop Artwork Here';">
             </div>
+            <span class="file-submsg" style="display:block; margin-top:6px;">By uploading, you confirm you own this artwork or have permission to use it.</span>
           </div>
 
           <button type="submit" class="submit-custom">Request Custom Run Quote</button>
+          <p class="form-success" id="customFormSuccess" role="status" aria-live="polite" style="display:none; margin-top:14px; font-size:13px; color:#1a1a1a;">✓ Request received — we'll review your artwork and follow up by email within 24 hours.</p>
         </form>
       </div>
 
@@ -458,15 +508,17 @@
 
     <!-- OWNER LOGO STRIP: PUT YOUR OWN LOGOS OR PARTNERS HERE -->
     <div class="logo-showcase">
-      <h4>Valley Crews &amp; Brands We Print For</h4>
+      <h4>Built For Crews Like Yours</h4>
       <div class="logo-track">
-        <!-- Replace 'src' with your actual image paths to show off your custom clients! -->
-        <span class="dummy-logo">VALLEY AUTO</span>
-        <span class="dummy-logo">801 TATTOO CO.</span>
-        <span class="dummy-logo">WESTSIDE BARBELL</span>
-        <span class="dummy-logo">CENTENNIAL REC</span>
-        <!-- <img src="your-client-logo-1.png" alt="Client Logo"> -->
-        <!-- <img src="your-client-logo-2.png" alt="Client Logo"> -->
+        <!-- LIVE SITE NOTE: These are placeholder examples only — swap them for your real, confirmed clients
+             (with permission) before launch. Do not display a business's name/logo as a client unless they've
+             actually ordered from you and agreed to be featured; doing otherwise can be considered false advertising. -->
+        <span class="dummy-logo">YOUR CREW HERE</span>
+        <span class="dummy-logo">LOCAL CAR CLUB</span>
+        <span class="dummy-logo">801 GYM</span>
+        <span class="dummy-logo">YOUR SHOP NAME</span>
+        <!-- <img src="your-client-logo-1.png" alt="Client business name"> -->
+        <!-- <img src="your-client-logo-2.png" alt="Client business name"> -->
       </div>
     </div>
 
@@ -491,45 +543,169 @@
     <div class="kicker mono">Direct Communication</div>
     <h2>Join the Insider List</h2>
     <p>Skip the drops entirely. Get standard stock tracking adjustments, new apparel alerts, and tracking keys straight to your inbox.</p>
-    <form class="join-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Subscribed ✓';">
-      <input type="email" placeholder="your@email.com" required><button type="submit">Join</button>
+    <form class="join-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Subscribed ✓'; showToast('You\'re on the list');">
+      <label for="join-email" class="visually-hidden">Email address</label>
+      <input type="email" id="join-email" name="email" placeholder="your@email.com" required>
+      <button type="submit">Join</button>
     </form>
-    <div class="join-note">SECURE COMM CHANNEL FOR LOCALS</div>
+    <div class="join-note">No spam. Unsubscribe anytime. See our <button type="button" style="background:none;border:none;color:var(--mid);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:underline;cursor:pointer;padding:0;" onclick="openModal('modal-privacy')">Privacy Policy</button>.</div>
   </div>
 </section>
 
 <footer>
   <div class="brand">
-    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="20" height="20"><polygon points="50,4 92,46 50,46 8,46" fill="none" stroke="var(--ink)" stroke-width="6"/><polygon points="50,96 92,54 50,54 8,54" fill="none" stroke="var(--ink)" stroke-width="6"/></svg>
+    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="20" height="20" aria-hidden="true"><polygon points="50,4 92,46 50,46 8,46" fill="none" stroke="var(--ink)" stroke-width="6"/><polygon points="50,96 92,54 50,54 8,54" fill="none" stroke="var(--ink)" stroke-width="6"/></svg>
     <span class="brand-name">WVC Originals</span>
   </div>
-  <div class="footer-links"><a href="#">Instagram</a><a href="#">TikTok</a><a href="#">Support</a></div>
-  <div class="footer-fine">© 2026 WVC ORIGINALS — ESTABLISHED IN THE 801. INDEPENDENT LABEL.</div>
+  <div class="footer-links">
+    <a href="#" target="_blank" rel="noopener">Instagram</a>
+    <a href="#" target="_blank" rel="noopener">TikTok</a>
+    <a href="mailto:hello@wvcoriginals.com">Support</a>
+    <button type="button" onclick="openModal('modal-privacy')">Privacy Policy</button>
+    <button type="button" onclick="openModal('modal-terms')">Terms of Service</button>
+    <button type="button" onclick="openModal('modal-shipping')">Shipping &amp; Returns</button>
+  </div>
+  <div class="footer-fine">© 2026 WVC Originals — established in the 801. Independent label.</div>
+  <div class="footer-disclaimer">WVC Originals is an independently owned and operated apparel brand. It is not affiliated with, endorsed by, or sponsored by the City of West Valley, Utah, or any of its departments. "Unity. Pride. Progress." is referenced as a tribute to our hometown, not as an official city communication.</div>
 </footer>
+
+<!-- ========================================== -->
+<!-- LEGAL MODALS                               -->
+<!-- ========================================== -->
+<div class="modal-overlay" id="modal-privacy" onclick="if(event.target===this) closeModal('modal-privacy')">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+    <button class="modal-close" onclick="closeModal('modal-privacy')" aria-label="Close">✕ Close</button>
+    <h3 id="privacy-title">Privacy Policy</h3>
+    <div class="modal-updated">Last updated: June 29, 2026</div>
+    <p>This Privacy Policy explains how WVC Originals ("we," "us," or "our") collects, uses, and protects information you provide when you visit this site, sign up for our newsletter, or submit a custom order request.</p>
+    <h4>Information We Collect</h4>
+    <ul>
+      <li>Contact details you provide directly, such as name, email address, and organization name.</li>
+      <li>Order details for custom runs, including gear type, estimated unit count, and uploaded artwork files.</li>
+      <li>Basic technical data (browser type, device type) collected automatically for site performance purposes.</li>
+    </ul>
+    <h4>How We Use It</h4>
+    <ul>
+      <li>To respond to custom quote requests and process orders.</li>
+      <li>To send newsletter updates if you opt in — you may unsubscribe at any time.</li>
+      <li>We do not sell or rent your personal information to third parties.</li>
+    </ul>
+    <h4>Your Choices</h4>
+    <p>You can request a copy of the information we hold about you, ask us to correct it, or ask us to delete it, by contacting us at the email address in our footer. Utah residents may have additional rights under the Utah Consumer Privacy Act.</p>
+    <h4>Contact</h4>
+    <p>Questions about this policy can be sent to hello@wvcoriginals.com.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-terms" onclick="if(event.target===this) closeModal('modal-terms')">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="terms-title">
+    <button class="modal-close" onclick="closeModal('modal-terms')" aria-label="Close">✕ Close</button>
+    <h3 id="terms-title">Terms of Service</h3>
+    <div class="modal-updated">Last updated: June 29, 2026</div>
+    <p>By using this site or placing an order with WVC Originals, you agree to the following terms.</p>
+    <h4>Independent Brand</h4>
+    <p>WVC Originals is an independently owned apparel brand and is not affiliated with, endorsed by, or sponsored by the City of West Valley, Utah, or any government entity.</p>
+    <h4>Orders &amp; Pricing</h4>
+    <p>Prices listed are in U.S. dollars and may change without notice. We reserve the right to limit quantities, refuse, or cancel any order, including custom runs that contain artwork we reasonably believe infringes someone else's trademark or copyright.</p>
+    <h4>Custom Artwork</h4>
+    <p>If you submit a logo or artwork for a custom run, you confirm that you own it or have the right to use it, and that printing it for you will not infringe any third party's rights. You are responsible for the content of artwork you upload.</p>
+    <h4>Intellectual Property</h4>
+    <p>All original site content, designs, and the WVC Originals name and marks belong to WVC Originals. You may not reproduce or resell our designs without written permission.</p>
+    <h4>Limitation of Liability</h4>
+    <p>To the fullest extent permitted by law, WVC Originals is not liable for indirect or consequential damages arising from use of this site or our products. Our total liability for any claim is limited to the amount you paid for the relevant order.</p>
+    <h4>Governing Law</h4>
+    <p>These terms are governed by the laws of the State of Utah.</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-shipping" onclick="if(event.target===this) closeModal('modal-shipping')">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="shipping-title">
+    <button class="modal-close" onclick="closeModal('modal-shipping')" aria-label="Close">✕ Close</button>
+    <h3 id="shipping-title">Shipping &amp; Returns</h3>
+    <div class="modal-updated">Last updated: June 29, 2026</div>
+    <h4>Shipping</h4>
+    <ul>
+      <li>Standard stock items typically ship within 3–5 business days.</li>
+      <li>Custom runs ship after proof approval and production, generally 10–14 business days.</li>
+      <li>Local West Valley City pickup is available at checkout for no extra charge; flat-rate shipping applies otherwise.</li>
+    </ul>
+    <h4>Returns &amp; Exchanges</h4>
+    <ul>
+      <li>Unworn, unwashed standard-stock items may be returned within 14 days of delivery for a refund or exchange.</li>
+      <li>Custom runs with your logo or artwork are made to order and are final sale, except for manufacturing defects.</li>
+      <li>To start a return, contact hello@wvcoriginals.com with your order number.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
   const burger = document.getElementById('burgerBtn');
   const navLinks = document.getElementById('navLinks');
-  burger.addEventListener('click', () => navLinks.classList.toggle('open'));
-  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+  burger.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    burger.setAttribute('aria-expanded', 'false');
+  }));
 
   let cartCount = 0;
-  function addToCart() {
+  function addToCart(productName, btn) {
     cartCount++;
-    document.getElementById('cartCounter').textContent = cartCount;
     const counter = document.getElementById('cartCounter');
+    counter.textContent = cartCount;
     counter.style.transform = 'scale(1.3)';
     setTimeout(() => { counter.style.transform = 'scale(1)'; }, 150);
+    showToast((productName || 'Item') + ' added to cart');
+  }
+
+  let toastTimer;
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
   }
 
   function filterCatalog(category, button) {
-    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-pressed', 'false');
+    });
     button.classList.add('active');
+    button.setAttribute('aria-pressed', 'true');
     const cards = document.querySelectorAll('.product-card');
     cards.forEach(card => {
       card.style.display = (category === 'all' || card.getAttribute('data-category') === category) ? 'flex' : 'none';
     });
   }
+
+  function handleCustomSubmit(e) {
+    e.preventDefault();
+    const form = document.getElementById('customForm');
+    document.getElementById('customFormSuccess').style.display = 'block';
+    form.reset();
+    document.getElementById('file-label').textContent = 'Drag & Drop Artwork Here';
+    showToast('Custom run request sent');
+  }
+
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(m => closeModal(m.id));
+    }
+  });
 </script>
 
 </body>
